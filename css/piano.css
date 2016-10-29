@@ -14,6 +14,20 @@
  */
 
 
+#beautiful-piano {
+  display: inline-flex;
+  margin-bottom: 20px;
+}
+.shrink #beautiful-piano {
+  display: flex;
+}
+input[type="number"] {
+  width: 25px;
+}
+form {
+  width: 500px;
+}
+
 #beautiful-piano :focus {
   outline:none !important;
 }
@@ -63,6 +77,7 @@
   position:relative;
   top:2px;
   height:216px;
+  background: red;
 }
 
 #beautiful-piano li div.anchor:active:before, #beautiful-piano li div.anchor.active:before {
@@ -75,6 +90,7 @@
   position:absolute;
   left:0px;
   top:0px;
+  background: red;
 }
 
 #beautiful-piano li div.anchor:active:after, #beautiful-piano li div.anchor.active:after {
@@ -87,6 +103,7 @@
   position:absolute;
   right:0px;
   top:0px;
+  background: red;
 }
 
 /* Black Tuts */
@@ -120,6 +137,7 @@
   -webkit-box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
   -moz-box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
   box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
+  background: red;
 }
 
 /* white keys */
