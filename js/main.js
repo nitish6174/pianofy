@@ -1,6 +1,6 @@
 /* Play mode */
-// var playMode = "song"
-var playMode = "piano"
+var playMode = "song"
+// var playMode = "piano"
 
 /* Load keys JSON data */
 var keys = JSON.parse(keys);
