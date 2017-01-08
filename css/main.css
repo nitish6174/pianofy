@@ -1,8 +1,11 @@
 /*
 	Color scheme
 		TURQUOISE
-			hsl(168,75%,41%)
 			#1ABC9C
+			hsl(168,75%,41%)
+		GREEN SEA
+			#16A085
+			hsl(168,75%,35%)
 */
 
 
@@ -75,23 +78,54 @@ body {
 
 
 
-/* File upload */
+/* File upload page */
 
-#file_input {
+#fileInputWrapper {
+	display: table;
 	width: 100%;
-	height: 200px;
-	margin-top: 20px;
-	background-color: ghostwhite;
-	outline: 1px solid #ccc;
+	background-color: #fff;
+	border: 2px dashed #ccc;
+}
+#fileInput {
+	width: 100%;
+	height: 100%;
+	display: table-cell;
 	text-align: center;
-	padding-top: 50px;
+	vertical-align: middle;
+}
+
+#playlistBox {
+	background-color: #fff;
+	border: 1px solid #ccc;
 }
 
 
 
+/* Now playing page */
+
+#output {
+	display: none;
+}
+
 
 /* Theme styling */
 
-.red-hr {
-	border: 2px solid #1ABC9C;
+.btn.btn-theme {
+	background-color: #1ABC9C;
+	color: #fff;
+	border-radius: 2px;
+}
+.btn.btn-theme:hover {
+	background-color: #16A085;
+}
+
+.hr-theme {
+	border: 1px solid #1ABC9C;
+}
+.hr-thick {
+	border-width: 2px;
+}
+
+.light {
+	color: #999;
 }

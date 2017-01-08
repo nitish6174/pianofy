@@ -1,22 +1,8 @@
-/*
- * The original styles and markup are from http://codepen.io/airpwn/pen/JycBg
- *
- * thanks to Taufik Nurrohman https://github.com/tovic
- */
-
-/**
- * Pure CSS3 Piano by Taufik Nurrohman
- * On: 1 December 2011
- * URL: http://hompimpaalaihumgambreng.blogspot.com/
- * Note: This experiment is under the God Almighty License.
- * Please do not replace or remove the attribution above if you want to save/modify this project legally.
- * Good luck!
- */
-
+/* Piano wrapper */
 
 #beautiful-piano {
   display: inline-flex;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 .shrink #beautiful-piano {
   display: flex;
@@ -36,6 +22,10 @@ form {
   padding: 0;
   margin: 0;
 }
+
+
+
+/* White key */
 
 #beautiful-piano li {
   list-style:none;
@@ -70,14 +60,19 @@ form {
   border-radius:0 0 3px 3px;
 }
 
+
+
+/* White key pressed */
+
 #beautiful-piano li div.anchor:active, #beautiful-piano li div.anchor.active {
   -webkit-box-shadow:0 2px 2px rgba(0,0,0,0.4);
   -moz-box-shadow:0 2px 2px rgba(0,0,0,0.4);
   box-shadow:0 2px 2px rgba(0,0,0,0.4);
   position:relative;
-  top:2px;
-  height:216px;
-  background: red;
+  top:0px;
+  height:220px;
+  background: #ccc;
+  z-index: 0;
 }
 
 #beautiful-piano li div.anchor:active:before, #beautiful-piano li div.anchor.active:before {
@@ -90,7 +85,8 @@ form {
   position:absolute;
   left:0px;
   top:0px;
-  background: red;
+  background: #ccc;
+  z-index: 0;
 }
 
 #beautiful-piano li div.anchor:active:after, #beautiful-piano li div.anchor.active:after {
@@ -103,15 +99,19 @@ form {
   position:absolute;
   right:0px;
   top:0px;
-  background: red;
+  background: #ccc;
+  z-index: 0;
 }
 
-/* Black Tuts */
+
+
+/* Black key */
+
 #beautiful-piano li span {
   position:absolute;
   top:0px;
-  left:-12px;
-  width:20px;
+  left:-11px;
+  width:22px;
   height:120px;
   background:#333;
   background:-webkit-linear-gradient(-20deg,#333,#000,#333);
@@ -131,31 +131,41 @@ form {
   border-radius:0 0 2px 2px;
 }
 
+
+
+/* Black key pressed */
+
 #beautiful-piano li span:active, #beautiful-piano li span.active {
   border-bottom-width:2px;
-  height:123px;
+  height:120px;
   -webkit-box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
   -moz-box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
   box-shadow:inset 0px -1px 1px rgba(255,255,255,0.4),0 1px 0px rgba(0,0,0,0.8),0 2px 2px rgba(0,0,0,0.4),0 -1px 0px #000;
-  background: red;
+  background: #ccc;
 }
 
-/* white keys */
+
+
+/* White key label */
+
 .piano-show-names #beautiful-piano div[data-keyname]:not(:active):not(.active):after {
-  font-family: Arial, sans-serif;
-  font-size: 20px;
+  font-size: 15px;
   content: attr(data-keyname);
   position: absolute;
-  bottom: 25px;
+  bottom: 5px;
   left: 20%;
+  z-index: 1000;
 }
 
-/* black keys */
+
+
+/* Black key label */
+
 .piano-show-names #beautiful-piano span[data-keyname]:not(:active):not(.active):after {
   color: white;
-  font-family: Arial, sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   content: attr(data-keyname);
   position: absolute;
-  bottom: 8px;
+  bottom: 5px;
+  z-index: 1000;
 }
