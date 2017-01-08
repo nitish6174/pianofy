@@ -1,29 +1,61 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<title>pianofication</title>
+	<title>Pianofy</title>
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<link rel="stylesheet" href="css/piano.css">
+	<link rel="stylesheet" type="text/css" href="css/piano.css">
 </head>
 <body>
 
 	<div class="container-fluid">
-		<div id="file_input"><h3>Drag and drop a mp3 file</h3></div>
-		<br>
-		<div class='piano-container'></div>
-		<br>
-		<div id="piano"></div>
-		<div id="output">
-			<div class="row"></div>
+	<div class="row" id="tabBar">
+		<div class="col-xs-4 tab-head page-toggle active" data-tabno="1"><div><h3>About</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" data-tabno="2"><div><h3>Upload files</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" data-tabno="3"><div><h3>Now playing</h3></div></div>
+	</div>
+	</div>
+
+	<div class="container-fluid" id="page1">
+
+		<div class="tab-page" id="page1">
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1" id="aboutBox">
+					<h1 class="text-center">Pianofy</h1>
+					<hr class="red-hr">
+					<h3>Convert MP3 files into piano notes and learn along!</h3>
+				</div>
+			</div>
 		</div>
+
+		<div class="tab-page" id="page2">
+			<div class="row">
+				<div class="col-md-6">
+					<div id="file_input"><h3>Drag and drop MP3 files</h3></div>
+				</div>
+				<div class="col-md-6">
+					<div id="playlist"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-page" id="page3">
+			<div class='piano-container'></div>
+			<br>
+			<div id="piano"></div>
+			<div id="output">
+				<div class="row"></div>
+			</div>
+		</div>
+
 	</div>
 
 
 	<script type="text/javascript" src="data/keys.json"></script>
 
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/ext/jquery.min.js"></script>
+	<script type="text/javascript" src="js/ext/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/ext/d3.min.js"></script>
 
 	<script type="text/javascript" src="js/piano.js"></script>
 	<script type="text/javascript" src="js/audiosynth.js"></script>
@@ -43,6 +75,7 @@
 
 	<script type="text/javascript" src="js/makekeyboard.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/process.js"></script>
 
 </body>
 </html>
