@@ -2,17 +2,18 @@
 <html>
 <head>
 	<title>Pianofy</title>
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/ext/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/ext/piano.css">
+	<link rel="stylesheet" type="text/css" href="css/thin_scroll.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<link rel="stylesheet" type="text/css" href="css/piano.css">
 </head>
 <body>
 
 	<div class="container-fluid">
 	<div class="row" id="tabBar">
-		<div class="col-xs-4 tab-head page-toggle active" data-tabno="1"><div><h3>About</h3></div></div>
-		<div class="col-xs-4 tab-head page-toggle" data-tabno="2"><div><h3>Upload files</h3></div></div>
-		<div class="col-xs-4 tab-head page-toggle" data-tabno="3"><div><h3>Now playing</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" id="tabHead1" data-tabno="1"><div><h3>About</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" id="tabHead2" data-tabno="2"><div><h3>Upload files</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" id="tabHead3" data-tabno="3"><div><h3>Now playing</h3></div></div>
 	</div>
 	</div>
 
@@ -22,8 +23,18 @@
 			<div class="row">
 				<div class="col-md-10 col-md-offset-1" id="aboutBox">
 					<h1 class="text-center">Pianofy</h1>
-					<hr class="red-hr">
-					<h3>Convert MP3 files into piano notes and learn along!</h3>
+					<hr class="hr-theme hr-thick">
+					<h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
+					<br>
+					<ul>
+						<li><h4>Go to the <i>'Upload files'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
+						<li><h4>Select the song to convert from the playlist</h4></li>
+						<li><h4>Generated notes will be shown on a piano as the song plays</h4></li>
+					</ul>
+					<br>
+					<div class="text-center">
+						<button class="btn btn-theme btn-lg" onclick="tabSelect(2);"><strong>Start</strong></button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -31,18 +42,30 @@
 		<div class="tab-page" id="page2">
 			<div class="row">
 				<div class="col-md-6">
-					<div id="file_input"><h3>Drag and drop MP3 files</h3></div>
+					<div id="fileInputWrapper">
+					    <div id="fileInput"><h3>Drag and drop MP3 files</h3></div>
+					</div>
 				</div>
 				<div class="col-md-6">
-					<div id="playlist"></div>
+					<div id="playlistBox">
+						<h3 class="text-center">Playlist</h3>
+						<hr class="hr-theme">
+						<div id="playlist">
+							<h4 class="text-center light"><i>Playlist is currently empty</i></h4>
+							<h4 class="text-center light"><i>Upload some MP3 files to add to playlist</i></h4>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="tab-page" id="page3">
-			<div class='piano-container'></div>
+			<div class="row">
+				<div class="col-xs-12">
+					<div id="keyboard"></div>					
+				</div>
+			</div>
 			<br>
-			<div id="piano"></div>
 			<div id="output">
 				<div class="row"></div>
 			</div>
@@ -51,15 +74,17 @@
 	</div>
 
 
-	<script type="text/javascript" src="data/keys.json"></script>
+
+
 
 	<script type="text/javascript" src="js/ext/jquery.min.js"></script>
 	<script type="text/javascript" src="js/ext/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/ext/d3.min.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
 
-	<script type="text/javascript" src="js/piano.js"></script>
+	<script type="text/javascript" src="data/keys.json"></script>
 	<script type="text/javascript" src="js/audiosynth.js"></script>
 
+	<script type="text/javascript" src="js/ext/d3.min.js"></script>
 	<!-- <script type="text/javascript" src="js/MIDI.js"></script> -->
 	<script type="text/javascript" src="js/inc/shim/Base64.js"></script>
 	<script type="text/javascript" src="js/inc/shim/Base64binary.js"></script>
@@ -73,8 +98,9 @@
 	<script type="text/javascript" src="js/util/dom_request_xhr.js"></script>
 	<script type="text/javascript" src="js/util/dom_request_script.js"></script>
 
-	<script type="text/javascript" src="js/makekeyboard.js"></script>
-	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/keyboard/piano.js"></script>
+	<script type="text/javascript" src="js/keyboard/makekeyboard.js"></script>
+
 	<script type="text/javascript" src="js/process.js"></script>
 
 </body>
