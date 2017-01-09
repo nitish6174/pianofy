@@ -53,9 +53,12 @@ var out_elem = document.querySelector('#output div.row');
 /* Document loaded */
 
 $(document).ready(function () {
+
+	initialiseFrequencyBinDisplay();
+
 	visualizer = new AudioVisualizer();
-	visualizer.setupAudioProcessing();
 	visualizer.handleSongs();
+
 	MIDI.loadPlugin({
 		soundfontUrl: "./soundfont/",
 		instrument: "acoustic_grand_piano",
@@ -63,8 +66,11 @@ $(document).ready(function () {
 			playHardCoded();
 		}
 	});
+	
 });
 
+
+/* Audio visualizer object */
 
 function AudioVisualizer() {
 	this.bins = new Array();
@@ -74,100 +80,6 @@ function AudioVisualizer() {
 	this.analyser;
 }
 
-AudioVisualizer.prototype.setupAudioProcessing = function () {
-	//get the audio context
-	this.audioContext = new AudioContext();
-	this.audioContext.sampleRate = sampleRate;
-	//create the javascript node
-	this.javascriptNode = this.audioContext.createScriptProcessor(bufferSize,numberOfInputChannels,numberOfOutputChannels);
-	this.javascriptNode.connect(this.audioContext.destination);
-	//create the source buffer
-	this.sourceBuffer = this.audioContext.createBufferSource();
-	this.sourceBuffer.playbackRate.value = playbackRate;
-	//create the analyser node
-	this.analyser = this.audioContext.createAnalyser();
-	this.analyser.frequencyBinCount = frequencyBinCount;
-	this.analyser.smoothingTimeConstant = smoothingTimeConstant;
-	this.analyser.fftSize = fftSize;
-	this.analyser.minDecibels = minDecibels;
-	this.analyser.maxDecibels = maxDecibels;
-	//connect source to analyser
-	this.sourceBuffer.connect(this.analyser);
-	//analyser to speakers
-	this.analyser.connect(this.javascriptNode);
-	//connect source to analyser
-	if(playMode=="song")
-		this.sourceBuffer.connect(this.audioContext.destination);
-
-	for(var i=0;i<frequencyBinCount;i++)
-	{
-		var label = getBinFrequency(i);
-		out_elem.innerHTML += "<div class='col-sm-1'><span id='freq"+i.toString()+"'>"+label.toString()+"</span> : <span id='bin"+i.toString()+"'></span></div>";
-		addMapping(label);
-	}
-
-	var that = this;
-
-	//this is where we animates the bars
-	this.javascriptNode.onaudioprocess = function () {
-
-		// get the average for the first channel
-		var array = new Uint8Array(that.analyser.frequencyBinCount);
-		that.analyser.getByteFrequencyData(array);
-
-		var slice_sum = 0;
-		var slice_count = 0;
-		for(var i=0;i<frequencyBinCount;i++)
-		{
-			var f = parseInt(document.getElementById('freq'+i.toString()).innerHTML);
-			var elem = document.getElementById('bin'+i.toString());
-			if(freq_map[f]!=undefined)
-			{
-				slice_sum += array[i];
-				slice_count++;
-				elem.innerHTML = array[i];
-				history[history_pos][i] = array[i];
-			}
-		}
-		var slice_avg = slice_sum/slice_count;
-		for(var i=0;i<frequencyBinCount;i++)
-		{
-			var f = parseInt(document.getElementById('freq'+i.toString()).innerHTML);
-			if(freq_map[f]!=undefined)
-			{
-				note = freq_map[f];
-				if(checkDisplayNote(slice_avg,history,i)==1)
-					$("[data-ipn='"+note+"']").addClass('active');
-				else
-					$("[data-ipn='"+note+"']").removeClass('active');
-				if(playMode=="piano")
-				{
-					if(checkPlayNote(slice_avg,history,i)==1)
-						playNote(note,history[history_pos][i]);
-				}
-			}
-		}
-		history_pos=(history_pos+1)%history_size;
-	}
-
-};
-
-
-/* Start the audio processing */
-
-AudioVisualizer.prototype.start = function (buffer) {
-	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
-	var that = this;
-
-	function decodeAudioDataSuccess(decodedBuffer) {
-		that.sourceBuffer.buffer = decodedBuffer
-		that.sourceBuffer.start(0);
-	}
-
-	function decodeAudioDataFailed() {
-		debugger
-	}
-};
 
 
 /* Handle file upload and song selection */
@@ -208,12 +120,7 @@ AudioVisualizer.prototype.handleSongs = function () {
 			{
 				var filename = uploadedFiles[i]["name"];
 				var index = l+i;
-				var elem = document.createElement("div");
-				elem.className = "playlist-item";
-				elem.id = "playlistItem"+index.toString();
-				elem.setAttribute("data-index",index.toString());
-				elem.innerHTML = filename;
-				playlistElem.appendChild(elem);
+				var elem = addPlaylistItem(filename,index);
 				elem.onclick = function(){
 					var playIndex = parseInt(this.getAttribute('data-index'));
 					$(".playlist-item.playing").removeClass("playing");
@@ -223,7 +130,7 @@ AudioVisualizer.prototype.handleSongs = function () {
 					var fileReader = new FileReader();
 					fileReader.onload = function (e) {
 						var fileResult = e.target.result;
-						visualizer.start(fileResult);
+						visualizer.startAudioProcessing(fileResult);
 					};
 					fileReader.onerror = function (e) {
 						debugger
@@ -234,7 +141,109 @@ AudioVisualizer.prototype.handleSongs = function () {
 		}
 	}, false);
 
+
+	function addPlaylistItem(filename,index)
+	{
+		var elem = document.createElement("div");
+		elem.className = "playlist-item";
+		elem.id = "playlistItem"+index.toString();
+		elem.setAttribute("data-index",index.toString());
+		elem.innerHTML = filename;
+		playlistElem.appendChild(elem);
+		return elem;
+	}
+
 }
+
+
+
+/* Start analyzing on selecting song */
+
+AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
+
+	var audioVisualizerObj = this;
+
+	// Make audio context
+	if(this.audioContext)
+		this.audioContext.close();
+	this.audioContext = new AudioContext();
+	this.audioContext.sampleRate = sampleRate;
+	//create the javascript node
+	this.javascriptNode = this.audioContext.createScriptProcessor(bufferSize,numberOfInputChannels,numberOfOutputChannels);
+	this.javascriptNode.connect(this.audioContext.destination);
+	//create the analyser node
+	this.analyser = this.audioContext.createAnalyser();
+	this.analyser.frequencyBinCount = frequencyBinCount;
+	this.analyser.smoothingTimeConstant = smoothingTimeConstant;
+	this.analyser.fftSize = fftSize;
+	this.analyser.minDecibels = minDecibels;
+	this.analyser.maxDecibels = maxDecibels;
+	//analyser to speakers
+	this.analyser.connect(this.javascriptNode);
+
+	//create the source buffer
+	this.sourceBuffer = this.audioContext.createBufferSource();
+	this.sourceBuffer.playbackRate.value = playbackRate;
+	//connect source to song/analyser
+	if(playMode=="song")
+		this.sourceBuffer.connect(this.audioContext.destination);
+	else
+		this.sourceBuffer.connect(this.analyser);
+
+	// get decoded audio data into audio context
+	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
+	function decodeAudioDataSuccess(decodedBuffer) {
+		visualizer.sourceBuffer.buffer = decodedBuffer
+		visualizer.sourceBuffer.start(0);
+	}
+	function decodeAudioDataFailed() {
+		debugger
+	}
+
+	/* Note extraction calculation as song progresses */
+
+	this.javascriptNode.onaudioprocess = function () {
+
+		// get the average for the first channel
+		var array = new Uint8Array(visualizer.analyser.frequencyBinCount);
+		visualizer.analyser.getByteFrequencyData(array);
+
+		var slice_sum = 0;
+		var slice_count = 0;
+		for(var i=0;i<frequencyBinCount;i++)
+		{
+			var f = parseInt(document.getElementById('freq'+i.toString()).innerHTML);
+			var elem = document.getElementById('bin'+i.toString());
+			if(freq_map[f]!=undefined)
+			{
+				slice_sum += array[i];
+				slice_count++;
+				elem.innerHTML = array[i];
+				history[history_pos][i] = array[i];
+			}
+		}
+		var slice_avg = slice_sum/slice_count;
+		for(var i=0;i<frequencyBinCount;i++)
+		{
+			var f = parseInt(document.getElementById('freq'+i.toString()).innerHTML);
+			if(freq_map[f]!=undefined)
+			{
+				note = freq_map[f];
+				if(checkDisplayNote(slice_avg,history,i)==1)
+					$("[data-ipn='"+note+"']").addClass('active');
+				else
+					$("[data-ipn='"+note+"']").removeClass('active');
+				if(playMode=="piano")
+				{
+					if(checkPlayNote(slice_avg,history,i)==1)
+						playNote(note,history[history_pos][i]);
+				}
+			}
+		}
+		history_pos=(history_pos+1)%history_size;
+	}
+
+};
 
 
 
@@ -269,6 +278,17 @@ function addMapping(frequency)
 
 
 /* Notes playing and display */
+
+// Frequency-amplitude display initialisation
+function initialiseFrequencyBinDisplay()
+{
+	for(var i=0;i<frequencyBinCount;i++)
+	{
+		var label = getBinFrequency(i);
+		out_elem.innerHTML += "<div class='col-sm-1'><span id='freq"+i.toString()+"'>"+label.toString()+"</span> : <span id='bin"+i.toString()+"'></span></div>";
+		addMapping(label);
+	}
+}
 
 function playHardCoded()
 {
