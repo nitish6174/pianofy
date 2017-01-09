@@ -99,6 +99,18 @@ body {
 	border: 1px solid #ccc;
 }
 
+.playlist-item {
+	padding: 5px;
+	padding-left: 20px;
+	border-bottom: 1px solid #ccc;
+	cursor: pointer;
+}
+.playlist-item:hover {
+	background-color: #f6f6f6;
+}
+.playlist-item.playing {
+	background-color: hsla(168,75%,41%,0.5);
+}
 
 
 /* Now playing page */
@@ -124,6 +136,9 @@ body {
 }
 .hr-thick {
 	border-width: 2px;
+}
+.hr-bottomless {
+	margin-bottom: 0;
 }
 
 .light {
