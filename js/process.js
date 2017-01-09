@@ -1,6 +1,4 @@
-/* Play mode */
-var playMode = "song"
-var playMode = "piano"
+var currentIndex;
 
 /* Load keys JSON data */
 var keys = JSON.parse(keys);
@@ -77,6 +75,9 @@ function AudioVisualizer() {
 	this.javascriptNode;
 	this.audioContext;
 	this.sourceBuffer;
+	this.sourceBufferOriginal;
+	this.gainNode;
+	this.gainNodeOriginal;
 	this.analyser;
 }
 
@@ -113,7 +114,8 @@ AudioVisualizer.prototype.handleSongs = function () {
 		if(l==0)
 			playlistElem.innerHTML = "";
 		uploadedFiles = e.dataTransfer.files;
-		playlistFiles =  playlistFiles.concat(uploadedFiles);
+		for(var i=0;i<uploadedFiles.length;i++)
+			playlistFiles.push(uploadedFiles[i]);
 		for(var i=0;i<uploadedFiles.length;i++)
 		{
 			if(uploadedFiles[i]["type"]=="audio/mp3")
@@ -122,20 +124,8 @@ AudioVisualizer.prototype.handleSongs = function () {
 				var index = l+i;
 				var elem = addPlaylistItem(filename,index);
 				elem.onclick = function(){
-					var playIndex = parseInt(this.getAttribute('data-index'));
-					$(".playlist-item.playing").removeClass("playing");
-					$("#playlistItem"+playIndex.toString()).addClass("playing");
-					setTimeout(function(){tabSelect(3);},1000);
-					
-					var fileReader = new FileReader();
-					fileReader.onload = function (e) {
-						var fileResult = e.target.result;
-						visualizer.startAudioProcessing(fileResult);
-					};
-					fileReader.onerror = function (e) {
-						debugger
-					};
-					fileReader.readAsArrayBuffer(uploadedFiles[playIndex]);
+					currentIndex = parseInt(this.getAttribute('data-index'));
+					playSong();
 				}
 			}
 		}
@@ -153,6 +143,32 @@ AudioVisualizer.prototype.handleSongs = function () {
 		return elem;
 	}
 
+	function playSong()
+	{
+		songName = playlistFiles[currentIndex]["name"];
+		$(".playlist-item.playing").removeClass("playing");
+		$("#playlistItem"+currentIndex.toString()).addClass("playing");
+		$("#currentSongName").html(songName);
+		setTimeout(function(){tabSelect(3);},500);
+		
+		var fileReader = new FileReader();
+		fileReader.onload = function (e) {
+			var fileResult = e.target.result;
+			visualizer.startAudioProcessing(fileResult);
+		};
+		fileReader.readAsArrayBuffer(playlistFiles[currentIndex]);
+	}
+
+	function stopSong()
+	{
+		if(visualizer.audioContext!=undefined && visualizer.audioContext.state!="closed")
+			visualizer.audioContext.close();
+	}
+
+	// control buttons
+	$("#repeatSongButton").click(function(){ playSong() });
+	$("#stopSongButton").click(function(){ stopSong() });
+
 }
 
 
@@ -163,42 +179,64 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 
 	var audioVisualizerObj = this;
 
+	// stop current song
+	if(visualizer.audioContext!=undefined && visualizer.audioContext.state!="closed")
+		visualizer.audioContext.close();
 	// Make audio context
-	if(this.audioContext)
-		this.audioContext.close();
 	this.audioContext = new AudioContext();
 	this.audioContext.sampleRate = sampleRate;
-	//create the javascript node
+	// create the javascript node
 	this.javascriptNode = this.audioContext.createScriptProcessor(bufferSize,numberOfInputChannels,numberOfOutputChannels);
 	this.javascriptNode.connect(this.audioContext.destination);
-	//create the analyser node
+	// create the analyser node
 	this.analyser = this.audioContext.createAnalyser();
 	this.analyser.frequencyBinCount = frequencyBinCount;
 	this.analyser.smoothingTimeConstant = smoothingTimeConstant;
 	this.analyser.fftSize = fftSize;
 	this.analyser.minDecibels = minDecibels;
 	this.analyser.maxDecibels = maxDecibels;
-	//analyser to speakers
+	// analyser to speakers
 	this.analyser.connect(this.javascriptNode);
 
-	//create the source buffer
+	// create the source buffer and gain node
 	this.sourceBuffer = this.audioContext.createBufferSource();
 	this.sourceBuffer.playbackRate.value = playbackRate;
-	//connect source to song/analyser
-	if(playMode=="song")
-		this.sourceBuffer.connect(this.audioContext.destination);
-	else
-		this.sourceBuffer.connect(this.analyser);
+	this.gainNode = this.audioContext.createGain();
+	this.sourceBufferOriginal = this.audioContext.createBufferSource();
+	this.sourceBufferOriginal.playbackRate.value = playbackRate;
+	this.gainNodeOriginal = this.audioContext.createGain();
+	// connect source -> gainNode -> song/analyser
+	this.sourceBuffer.connect(this.gainNode);
+	this.gainNode.connect(this.analyser);
+	this.sourceBufferOriginal.connect(this.gainNodeOriginal);
+	this.gainNodeOriginal.connect(this.audioContext.destination);
 
 	// get decoded audio data into audio context
 	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
 	function decodeAudioDataSuccess(decodedBuffer) {
 		visualizer.sourceBuffer.buffer = decodedBuffer
 		visualizer.sourceBuffer.start(0);
+		visualizer.sourceBufferOriginal.buffer = decodedBuffer
+		visualizer.sourceBufferOriginal.start(0);
 	}
 	function decodeAudioDataFailed() {
 		debugger
 	}
+
+	// Fade between original and piano play mode
+	function setGain()
+	{
+		var elem = document.querySelector("#playModeSlider");
+		var x = parseInt(elem.value) / parseInt(elem.max);
+		// Use an equal-power crossfading curve:
+		var gain1 = Math.cos(x * 0.5*Math.PI);
+		var gain2 = Math.cos((1.0 - x) * 0.5*Math.PI);
+		visualizer.gainNode.gain.value = gain1;
+		visualizer.gainNodeOriginal.gain.value = gain2;		
+	}
+	setGain();
+	$("#playModeSlider").change(function() { setGain() });
+
 
 	/* Note extraction calculation as song progresses */
 
@@ -233,11 +271,8 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 					$("[data-ipn='"+note+"']").addClass('active');
 				else
 					$("[data-ipn='"+note+"']").removeClass('active');
-				if(playMode=="piano")
-				{
-					if(checkPlayNote(slice_avg,history,i)==1)
-						playNote(note,history[history_pos][i]);
-				}
+				if(checkPlayNote(slice_avg,history,i)==1)
+					playNote(note,history[history_pos][i]);
 			}
 		}
 		history_pos=(history_pos+1)%history_size;
