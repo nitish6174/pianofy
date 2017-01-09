@@ -62,10 +62,32 @@
 		<div class="tab-page" id="page3">
 			<div class="row">
 				<div class="col-xs-12">
-					<div id="keyboard"></div>					
+					<div id="playControlBox">
+						<div class="row">
+							<div class="col-md-11 col-sm-10" id="songTitle">
+								<strong>Song : </strong><span id="currentSongName">N/A</span>
+							</div>
+							<div class="col-md-1 col-sm-2">
+								<i class="clickable glyphicon glyphicon-repeat" id="repeatSongButton"></i>
+								<i class="clickable glyphicon glyphicon-stop" id="stopSongButton"></i>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-3 text-right">Piano</div>
+							<div class="col-xs-6" id="sliderLabelLeft">
+								<input type="range" min="0" max="100" value="0" id="playModeSlider">
+							</div>
+							<div class="col-xs-3">Original</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<br>
+			<div class="row">
+				<div class="col-xs-12">
+					<div id="keyboard"></div>
+				</div>
+			</div>
 			<div id="output">
 				<div class="row"></div>
 			</div>

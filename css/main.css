@@ -115,6 +115,13 @@ body {
 
 /* Now playing page */
 
+#playControlBox {
+	padding: 10px;
+	background-color: #fff;
+	box-shadow: 0px 0px 5px 0px #999;
+	font-size: 20px;
+}
+
 #output {
 	display: none;
 }
@@ -131,6 +138,15 @@ body {
 	background-color: #16A085;
 }
 
+.clickable {
+	cursor: pointer;
+	color: #1ABC9C;
+	transition: all 0.2s;
+}
+.clickable:hover {
+	text-shadow: 0px 0px 5px #1ABC9C;
+}
+
 .hr-theme {
 	border: 1px solid #1ABC9C;
 }
@@ -143,4 +159,15 @@ body {
 
 .light {
 	color: #999;
+}
+
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+
+.text-right {
+	text-align: right;
 }
