@@ -42,15 +42,20 @@ for (var i=0;i<history_size;i++)
 }
 history_pos = 0;
 
+
+
 /* MP3 processing */
 var visualizer;
 var out_elem = document.querySelector('#output div.row');
 
 
+
+/* Document loaded */
+
 $(document).ready(function () {
 	visualizer = new AudioVisualizer();
 	visualizer.setupAudioProcessing();
-	visualizer.handleDrop();
+	visualizer.handleSongs();
 	MIDI.loadPlugin({
 		soundfontUrl: "./soundfont/",
 		instrument: "acoustic_grand_piano",
@@ -148,7 +153,8 @@ AudioVisualizer.prototype.setupAudioProcessing = function () {
 };
 
 
-//start the audio processing
+/* Start the audio processing */
+
 AudioVisualizer.prototype.start = function (buffer) {
 	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
 	var that = this;
@@ -164,49 +170,75 @@ AudioVisualizer.prototype.start = function (buffer) {
 };
 
 
-AudioVisualizer.prototype.handleDrop = function () {
-	//drag Enter
-	document.body.addEventListener("dragenter", function () {
-	   
+/* Handle file upload and song selection */
+
+AudioVisualizer.prototype.handleSongs = function () {
+
+	// drag enter
+	dragDropArea.addEventListener("dragenter", function () {
+		$('#fileInput').css("box-shadow","0px 0px 5px 0px #999");
 	}, false);
 
-	//drag over
-	document.body.addEventListener("dragover", function (e) {
+	// drag over
+	document.addEventListener("dragover", function (e) {
 		e.stopPropagation();
 		e.preventDefault();
 		e.dataTransfer.dropEffect = 'copy';
 	}, false);
 
-	//drag leave
-	document.body.addEventListener("dragleave", function () {
-	   
+	// drag leave
+	dragDropArea.addEventListener("dragleave", function () {
+		$('#fileInput').css("box-shadow","none");
 	}, false);
 
-	//drop
-	document.body.addEventListener("drop", function (e) {
+	// drop
+	document.addEventListener("drop", function (e) {
+		$('#fileInput').css("box-shadow","none");
 		e.stopPropagation();
-
 		e.preventDefault();
 
-		//get the file
-		var file = e.dataTransfer.files[0];
-		var fileName = file.name;
-
-		var fileReader = new FileReader();
-
-		fileReader.onload = function (e) {
-			var fileResult = e.target.result;
-			visualizer.start(fileResult);
-		};
-
-		fileReader.onerror = function (e) {
-		  debugger
-		};
-	   
-		fileReader.readAsArrayBuffer(file);
+		var l = playlistFiles.length;
+		if(l==0)
+			playlistElem.innerHTML = "";
+		uploadedFiles = e.dataTransfer.files;
+		playlistFiles =  playlistFiles.concat(uploadedFiles);
+		for(var i=0;i<uploadedFiles.length;i++)
+		{
+			if(uploadedFiles[i]["type"]=="audio/mp3")
+			{
+				var filename = uploadedFiles[i]["name"];
+				var index = l+i;
+				var elem = document.createElement("div");
+				elem.className = "playlist-item";
+				elem.id = "playlistItem"+index.toString();
+				elem.setAttribute("data-index",index.toString());
+				elem.innerHTML = filename;
+				playlistElem.appendChild(elem);
+				elem.onclick = function(){
+					var playIndex = parseInt(this.getAttribute('data-index'));
+					$(".playlist-item.playing").removeClass("playing");
+					$("#playlistItem"+playIndex.toString()).addClass("playing");
+					setTimeout(function(){tabSelect(3);},1000);
+					
+					var fileReader = new FileReader();
+					fileReader.onload = function (e) {
+						var fileResult = e.target.result;
+						visualizer.start(fileResult);
+					};
+					fileReader.onerror = function (e) {
+						debugger
+					};
+					fileReader.readAsArrayBuffer(uploadedFiles[playIndex]);
+				}
+			}
+		}
 	}, false);
+
 }
 
+
+
+/* Mapping and calculation functions */
 
 function getBinFrequency(binIndex)
 {
@@ -234,6 +266,9 @@ function addMapping(frequency)
 	}
 }
 
+
+
+/* Notes playing and display */
 
 function playHardCoded()
 {
