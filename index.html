@@ -21,21 +21,23 @@
 
 		<div class="tab-page" id="page1">
 			<div class="row">
-				<div class="col-md-10 col-md-offset-1" id="aboutBox">
-					<h1 class="text-center">Pianofy</h1>
-					<hr class="hr-theme hr-thick">
-					<h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
-					<br>
-					<ul>
-						<li><h4>Go to the <i>'Playlist'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
-						<li><h4>Click on any song from the playlist to start processing it</h4></li>
-						<li><h4>Generated notes will be shown on a piano as the song is played</h4></li>
-						<li><h4>Use the controls to restart, stop the song or choose another song from the playlist</h4></li>
-						<li><h4>You can mix the original song and piano notes using slider to see which part of song is being played</h4></li>
-					</ul>
-					<br>
-					<div class="text-center">
-						<button class="btn btn-theme btn-lg" onclick="tabSelect(2);"><strong>Start</strong></button>
+				<div class="col-md-10 col-md-offset-1">
+					<div class="sheet" id="aboutBox">
+						<h1 class="text-center">Pianofy</h1>
+						<hr class="hr-theme hr-thick">
+						<h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
+						<br>
+						<ul>
+							<li><h4>Go to the <i>'Playlist'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
+							<li><h4>Click on any song from the playlist to start processing it</h4></li>
+							<li><h4>Generated notes will be shown on a piano as the song is played</h4></li>
+							<li><h4>Use the controls to restart, stop the song or choose another song from the playlist</h4></li>
+							<li><h4>You can mix the original song and piano notes using slider to see which part of song is being played</h4></li>
+						</ul>
+						<br>
+						<div class="text-center">
+							<button class="btn btn-theme btn-lg" onclick="tabSelect(2);"><strong>Start</strong></button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -43,12 +45,12 @@
 
 		<div class="tab-page" id="page2">
 			<div class="row">
-				<div class="col-md-4">
+				<div class="col-sm-4">
 					<div id="fileInputWrapper">
 					    <div id="fileInput"><h3>Drag and drop MP3 files</h3></div>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-sm-4">
 					<div class="playlist-box">
 						<h3 class="text-center">Playlist</h3>
 						<hr class="hr-theme hr-bottomless">
@@ -58,11 +60,13 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-sm-4">
 					<div class="playlist-box">
 						<h3 class="text-center">Sample songs</h3>
 						<hr class="hr-theme hr-bottomless">
-						<div class="playlist" id="samplePlaylist"></div>
+						<div class="playlist" id="samplePlaylist">
+							<h4 class="text-center light"><i>Loading ...</i></h4>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -71,7 +75,7 @@
 		<div class="tab-page" id="page3">
 			<div class="row">
 				<div class="col-xs-12">
-					<div id="playControlBox">
+					<div class="sheet" id="playControlBox">
 						<div class="row">
 							<div class="col-md-11 col-sm-10" id="songTitle">
 								<strong>Song : </strong><span id="currentSongName">N/A</span>

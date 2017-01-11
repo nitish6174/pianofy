@@ -142,6 +142,7 @@ AudioVisualizer.prototype.stopSong = function() {
 /* Handle sample songs */
 
 AudioVisualizer.prototype.handleSampleSongs = function () {
+	samplePlaylistElem.innerHTML = "";
 	for(var i=0;i<sampleFiles.length;i++)
 	{
 		var elem = addPlaylistItem(sampleFiles[i],i,true);
@@ -161,11 +162,13 @@ AudioVisualizer.prototype.handleSongs = function () {
 
 	// drag enter
 	dragDropArea.addEventListener("dragenter", function () {
-		$('#fileInput').css("box-shadow","0px 0px 5px 0px #999");
+		$('#fileInput').css("box-shadow","0px 0px 10px 0px #999");
 	}, false);
 
 	// drag over
 	document.addEventListener("dragover", function (e) {
+		if(currentTab!=2)
+			tabSelect(2);
 		e.stopPropagation();
 		e.preventDefault();
 		e.dataTransfer.dropEffect = 'copy';

@@ -1,4 +1,5 @@
 /* Variables */
+var currentTab = 1;
 var userPlaylistFiles = [];
 var dragDropArea = document.querySelector('#fileInput');
 var userPlaylistElem = document.querySelector('#userPlaylist');
@@ -26,7 +27,15 @@ $('.tab-head').click(function(){
 
 function tabSelect(tabno)
 {
-	tabno = tabno.toString();
+	if(tabno==undefined)
+	{
+		tabno = currentTab;
+	}
+	else
+	{
+		currentTab = tabno;
+		tabno = tabno.toString();
+	}
 	$('.tab-head.active').removeClass('active');
 	$('.tab-head#tabHead'+tabno).addClass('active');
 	$('.tab-page').hide();
