@@ -46,8 +46,13 @@ sampleFiles = [
 	"Following the Footsteps.mp3"
 ]
 sampleFilePaths = [];
+sampleAudios = [];
 for(var i=0;i<sampleFiles.length;i++)
+{
 	sampleFilePaths[i] = "./songs/"+sampleFiles[i];
+	sampleAudios[(2*i)] = new Audio(sampleFilePaths[i]);
+	sampleAudios[(2*i)+1] = new Audio(sampleFilePaths[i]);
+}
 
 // Add playlist item
 function addPlaylistItem(filename,index,sample=false)

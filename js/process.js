@@ -119,16 +119,7 @@ AudioVisualizer.prototype.playSong = function() {
 		$("#currentSongName").html(songName);
 		setTimeout(function(){tabSelect(3);},500);
 
-		/* Load sample file and callback audio processing function */
-		url = sampleFilePaths[currentSamplePlaylistIndex];
-		var request = new XMLHttpRequest();
-		request.open('GET', url, true);
-		request.responseType = 'arraybuffer';
-		request.onload = function() {
-			var buffer = request.response;
-			visualizer.startAudioProcessing(buffer);
-		}
-		request.send();
+		visualizer.startAudioProcessing(currentSamplePlaylistIndex,true);
 	}
 }
 
@@ -214,7 +205,7 @@ AudioVisualizer.prototype.handleSongs = function () {
 
 /* Start analyzing on selecting song */
 
-AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
+AudioVisualizer.prototype.startAudioProcessing = function (buffer,sample=false) {
 
 	var audioVisualizerObj = this;
 
@@ -235,11 +226,21 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.analyser.minDecibels = minDecibels;
 	this.analyser.maxDecibels = maxDecibels;
 	// Source buffer and gain node
-	this.sourceBuffer = this.audioContext.createBufferSource();
-	this.sourceBuffer.playbackRate.value = playbackRate;
+	if(sample==false)
+	{
+		this.sourceBuffer = this.audioContext.createBufferSource();
+		this.sourceBuffer.playbackRate.value = playbackRate;
+		this.sourceBufferOriginal = this.audioContext.createBufferSource();
+		this.sourceBufferOriginal.playbackRate.value = playbackRate;
+	}
+	else
+	{
+		b1 = sampleAudios[(2*buffer)];
+		b2 = sampleAudios[(2*buffer)+1];
+		this.sourceBuffer = this.audioContext.createMediaElementSource(b1);
+		this.sourceBufferOriginal = this.audioContext.createMediaElementSource(b2);
+	}
 	this.gainNode = this.audioContext.createGain();
-	this.sourceBufferOriginal = this.audioContext.createBufferSource();
-	this.sourceBufferOriginal.playbackRate.value = playbackRate;
 	this.gainNodeOriginal = this.audioContext.createGain();
 
 	// Connections:
@@ -252,16 +253,24 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.sourceBufferOriginal.connect(this.gainNodeOriginal);
 	this.gainNodeOriginal.connect(this.audioContext.destination);
 
-	// get decoded audio data into audio context
-	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
-	function decodeAudioDataSuccess(decodedBuffer) {
-		visualizer.sourceBuffer.buffer = decodedBuffer
-		visualizer.sourceBuffer.start(0);
-		visualizer.sourceBufferOriginal.buffer = decodedBuffer
-		visualizer.sourceBufferOriginal.start(0);
+	// Decoded audio data if taking file input and start buffering
+	if(sample==false)
+	{
+		this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
+		function decodeAudioDataSuccess(decodedBuffer) {
+			visualizer.sourceBuffer.buffer = decodedBuffer
+			visualizer.sourceBuffer.start(0);
+			visualizer.sourceBufferOriginal.buffer = decodedBuffer
+			visualizer.sourceBufferOriginal.start(0);
+		}
+		function decodeAudioDataFailed() {
+			debugger
+		}
 	}
-	function decodeAudioDataFailed() {
-		debugger
+	else
+	{
+		b1.play();
+		b2.play();
 	}
 
 	// Fade between original and piano play mode
