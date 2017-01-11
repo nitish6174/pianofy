@@ -1,5 +1,5 @@
 var currentSamplePlaylistIndex;
-var currentPlaylistIndex;
+var currentUserPlaylistIndex;
 
 /* Load keys JSON data */
 var keys = JSON.parse(keys);
@@ -94,12 +94,12 @@ function AudioVisualizer() {
 /* Play song */
 
 AudioVisualizer.prototype.playSong = function() {
-	if(currentPlaylistIndex>=0)
+	if(currentUserPlaylistIndex>=0)
 	{
 		currentSamplePlaylistIndex = -1;
-		songName = playlistFiles[currentPlaylistIndex]["name"];
+		songName = userPlaylistFiles[currentUserPlaylistIndex]["name"];
 		$(".playlist-item.playing").removeClass("playing");
-		$("#playlistItem"+currentPlaylistIndex.toString()).addClass("playing");
+		$("#userPlaylistItem"+currentUserPlaylistIndex.toString()).addClass("playing");
 		$("#currentSongName").html(songName);
 		setTimeout(function(){tabSelect(3);},500);
 		
@@ -108,11 +108,11 @@ AudioVisualizer.prototype.playSong = function() {
 			var fileResult = e.target.result;
 			visualizer.startAudioProcessing(fileResult);
 		};
-		fileReader.readAsArrayBuffer(playlistFiles[currentPlaylistIndex]);
+		fileReader.readAsArrayBuffer(userPlaylistFiles[currentUserPlaylistIndex]);
 	}
 	else
 	{
-		currentPlaylistIndex = -1;
+		currentUserPlaylistIndex = -1;
 		songName = sampleFiles[currentSamplePlaylistIndex];
 		$(".playlist-item.playing").removeClass("playing");
 		$("#samplePlaylistItem"+currentSamplePlaylistIndex.toString()).addClass("playing");
@@ -146,15 +146,12 @@ AudioVisualizer.prototype.stopSong = function() {
 /* Handle sample songs */
 
 AudioVisualizer.prototype.handleSampleSongs = function () {
-	// currentPlaylistIndex = -1;
-	// currentSamplePlaylistIndex = 0;
-	// visualizer.playSong();
 	for(var i=0;i<sampleFiles.length;i++)
 	{
 		var elem = addPlaylistItem(sampleFiles[i],i,true);
 		elem.onclick = function(){
 			currentSamplePlaylistIndex = parseInt(this.getAttribute('data-index'));
-			currentPlaylistIndex = -1;
+			currentUserPlaylistIndex = -1;
 			visualizer.playSong();
 		}
 	}
@@ -189,12 +186,12 @@ AudioVisualizer.prototype.handleSongs = function () {
 		e.stopPropagation();
 		e.preventDefault();
 
-		var l = playlistFiles.length;
+		var l = userPlaylistFiles.length;
 		if(l==0)
-			playlistElem.innerHTML = "";
+			userPlaylistElem.innerHTML = "";
 		uploadedFiles = e.dataTransfer.files;
 		for(var i=0;i<uploadedFiles.length;i++)
-			playlistFiles.push(uploadedFiles[i]);
+			userPlaylistFiles.push(uploadedFiles[i]);
 		for(var i=0;i<uploadedFiles.length;i++)
 		{
 			if(uploadedFiles[i]["type"]=="audio/mp3")
@@ -203,7 +200,7 @@ AudioVisualizer.prototype.handleSongs = function () {
 				var index = l+i;
 				var elem = addPlaylistItem(filename,index);
 				elem.onclick = function(){
-					currentPlaylistIndex = parseInt(this.getAttribute('data-index'));
+					currentUserPlaylistIndex = parseInt(this.getAttribute('data-index'));
 					currentSamplePlaylistIndex = -1;
 					visualizer.playSong();
 				}
@@ -238,15 +235,8 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.analyser.minDecibels = minDecibels;
 	this.analyser.maxDecibels = maxDecibels;
 	// Source buffer and gain node
-	// if(currentPlaylistIndex>=0)
-	// {
-		this.sourceBuffer = this.audioContext.createBufferSource();
-		this.sourceBuffer.playbackRate.value = playbackRate;
-	// }
-	// else
-	// {
-	// 	this.sourceBuffer = this.audioContext.createMediaElementSource(buffer);
-	// }
+	this.sourceBuffer = this.audioContext.createBufferSource();
+	this.sourceBuffer.playbackRate.value = playbackRate;
 	this.gainNode = this.audioContext.createGain();
 	this.sourceBufferOriginal = this.audioContext.createBufferSource();
 	this.sourceBufferOriginal.playbackRate.value = playbackRate;
@@ -263,8 +253,7 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.gainNodeOriginal.connect(this.audioContext.destination);
 
 	// get decoded audio data into audio context
-	// if(currentPlaylistIndex>=0)
-		this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
+	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
 	function decodeAudioDataSuccess(decodedBuffer) {
 		visualizer.sourceBuffer.buffer = decodedBuffer
 		visualizer.sourceBuffer.start(0);
