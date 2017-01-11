@@ -1,4 +1,5 @@
-var currentIndex;
+var currentSamplePlaylistIndex;
+var currentPlaylistIndex;
 
 /* Load keys JSON data */
 var keys = JSON.parse(keys);
@@ -55,18 +56,24 @@ $(document).ready(function () {
 
 	initialiseFrequencyBinDisplay();
 
+	// Setup visualiser
 	visualizer = new AudioVisualizer();
+	visualizer.handleSampleSongs();
 	visualizer.handleSongs();
 
+	// Control buttons
+	$("#repeatSongButton").click(function(){ visualizer.playSong() });
+	$("#stopSongButton").click(function(){ visualizer.stopSong() });
+
+	// MIDI for sound
 	MIDI.loadPlugin({
 		soundfontUrl: "./soundfont/",
 		instrument: "acoustic_grand_piano",
-		onsuccess: function() {			
-			playHardCoded();
-		}
+		onsuccess: function() { playHardCoded(); }
 	});
 	
 });
+
 
 
 /* Audio visualizer object */
@@ -84,7 +91,78 @@ function AudioVisualizer() {
 
 
 
-/* Handle file upload and song selection */
+/* Play song */
+
+AudioVisualizer.prototype.playSong = function() {
+	if(currentPlaylistIndex>=0)
+	{
+		currentSamplePlaylistIndex = -1;
+		songName = playlistFiles[currentPlaylistIndex]["name"];
+		$(".playlist-item.playing").removeClass("playing");
+		$("#playlistItem"+currentPlaylistIndex.toString()).addClass("playing");
+		$("#currentSongName").html(songName);
+		setTimeout(function(){tabSelect(3);},500);
+		
+		var fileReader = new FileReader();
+		fileReader.onload = function (e) {
+			var fileResult = e.target.result;
+			visualizer.startAudioProcessing(fileResult);
+		};
+		fileReader.readAsArrayBuffer(playlistFiles[currentPlaylistIndex]);
+	}
+	else
+	{
+		currentPlaylistIndex = -1;
+		songName = sampleFiles[currentSamplePlaylistIndex];
+		$(".playlist-item.playing").removeClass("playing");
+		$("#samplePlaylistItem"+currentSamplePlaylistIndex.toString()).addClass("playing");
+		$("#currentSongName").html(songName);
+		setTimeout(function(){tabSelect(3);},500);
+
+		/* Load sample file and callback audio processing function */
+		url = sampleFilePaths[currentSamplePlaylistIndex];
+		var request = new XMLHttpRequest();
+		request.open('GET', url, true);
+		request.responseType = 'arraybuffer';
+		request.onload = function() {
+			var buffer = request.response;
+			visualizer.startAudioProcessing(buffer);
+		}
+		request.send();
+	}
+}
+
+
+
+/* Stop song */
+
+AudioVisualizer.prototype.stopSong = function() {
+	if(visualizer.audioContext!=undefined && visualizer.audioContext.state!="closed")
+		visualizer.audioContext.close();
+}
+
+
+
+/* Handle sample songs */
+
+AudioVisualizer.prototype.handleSampleSongs = function () {
+	// currentPlaylistIndex = -1;
+	// currentSamplePlaylistIndex = 0;
+	// visualizer.playSong();
+	for(var i=0;i<sampleFiles.length;i++)
+	{
+		var elem = addPlaylistItem(sampleFiles[i],i,true);
+		elem.onclick = function(){
+			currentSamplePlaylistIndex = parseInt(this.getAttribute('data-index'));
+			currentPlaylistIndex = -1;
+			visualizer.playSong();
+		}
+	}
+}
+
+
+
+/* Handle file upload and playlist song selection */
 
 AudioVisualizer.prototype.handleSongs = function () {
 
@@ -125,50 +203,13 @@ AudioVisualizer.prototype.handleSongs = function () {
 				var index = l+i;
 				var elem = addPlaylistItem(filename,index);
 				elem.onclick = function(){
-					currentIndex = parseInt(this.getAttribute('data-index'));
-					playSong();
+					currentPlaylistIndex = parseInt(this.getAttribute('data-index'));
+					currentSamplePlaylistIndex = -1;
+					visualizer.playSong();
 				}
 			}
 		}
 	}, false);
-
-
-	function addPlaylistItem(filename,index)
-	{
-		var elem = document.createElement("div");
-		elem.className = "playlist-item";
-		elem.id = "playlistItem"+index.toString();
-		elem.setAttribute("data-index",index.toString());
-		elem.innerHTML = filename;
-		playlistElem.appendChild(elem);
-		return elem;
-	}
-
-	function playSong()
-	{
-		songName = playlistFiles[currentIndex]["name"];
-		$(".playlist-item.playing").removeClass("playing");
-		$("#playlistItem"+currentIndex.toString()).addClass("playing");
-		$("#currentSongName").html(songName);
-		setTimeout(function(){tabSelect(3);},500);
-		
-		var fileReader = new FileReader();
-		fileReader.onload = function (e) {
-			var fileResult = e.target.result;
-			visualizer.startAudioProcessing(fileResult);
-		};
-		fileReader.readAsArrayBuffer(playlistFiles[currentIndex]);
-	}
-
-	function stopSong()
-	{
-		if(visualizer.audioContext!=undefined && visualizer.audioContext.state!="closed")
-			visualizer.audioContext.close();
-	}
-
-	// control buttons
-	$("#repeatSongButton").click(function(){ playSong() });
-	$("#stopSongButton").click(function(){ stopSong() });
 
 }
 
@@ -197,8 +238,15 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.analyser.minDecibels = minDecibels;
 	this.analyser.maxDecibels = maxDecibels;
 	// Source buffer and gain node
-	this.sourceBuffer = this.audioContext.createBufferSource();
-	this.sourceBuffer.playbackRate.value = playbackRate;
+	// if(currentPlaylistIndex>=0)
+	// {
+		this.sourceBuffer = this.audioContext.createBufferSource();
+		this.sourceBuffer.playbackRate.value = playbackRate;
+	// }
+	// else
+	// {
+	// 	this.sourceBuffer = this.audioContext.createMediaElementSource(buffer);
+	// }
 	this.gainNode = this.audioContext.createGain();
 	this.sourceBufferOriginal = this.audioContext.createBufferSource();
 	this.sourceBufferOriginal.playbackRate.value = playbackRate;
@@ -215,7 +263,8 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 	this.gainNodeOriginal.connect(this.audioContext.destination);
 
 	// get decoded audio data into audio context
-	this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
+	// if(currentPlaylistIndex>=0)
+		this.audioContext.decodeAudioData(buffer, decodeAudioDataSuccess, decodeAudioDataFailed);
 	function decodeAudioDataSuccess(decodedBuffer) {
 		visualizer.sourceBuffer.buffer = decodedBuffer
 		visualizer.sourceBuffer.start(0);

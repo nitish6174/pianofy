@@ -94,13 +94,10 @@ body {
 	vertical-align: middle;
 }
 
-#playlistBox {
+.playlist-box {
 	background-color: #fff;
 	border: 1px solid #ccc;
-	/*overflow: hidden;*/
 	overflow-y: auto;
-}
-#playlist {
 }
 .playlist-item {
 	padding: 5px;
