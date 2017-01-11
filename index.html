@@ -12,7 +12,7 @@
 	<div class="container-fluid">
 	<div class="row" id="tabBar">
 		<div class="col-xs-4 tab-head page-toggle" id="tabHead1" data-tabno="1"><div><h3>About</h3></div></div>
-		<div class="col-xs-4 tab-head page-toggle" id="tabHead2" data-tabno="2"><div><h3>Upload files</h3></div></div>
+		<div class="col-xs-4 tab-head page-toggle" id="tabHead2" data-tabno="2"><div><h3>Playlist</h3></div></div>
 		<div class="col-xs-4 tab-head page-toggle" id="tabHead3" data-tabno="3"><div><h3>Now playing</h3></div></div>
 	</div>
 	</div>
@@ -27,9 +27,11 @@
 					<h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
 					<br>
 					<ul>
-						<li><h4>Go to the <i>'Upload files'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
-						<li><h4>Select the song to convert from the playlist</h4></li>
-						<li><h4>Generated notes will be shown on a piano as the song plays</h4></li>
+						<li><h4>Go to the <i>'Playlist'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
+						<li><h4>Click on any song from the playlist to start processing it</h4></li>
+						<li><h4>Generated notes will be shown on a piano as the song is played</h4></li>
+						<li><h4>Use the controls to restart, stop the song or choose another song from the playlist</h4></li>
+						<li><h4>You can mix the original song and piano notes using slider to see which part of song is being played</h4></li>
 					</ul>
 					<br>
 					<div class="text-center">
@@ -41,19 +43,26 @@
 
 		<div class="tab-page" id="page2">
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-4">
 					<div id="fileInputWrapper">
 					    <div id="fileInput"><h3>Drag and drop MP3 files</h3></div>
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div id="playlistBox">
+				<div class="col-md-4">
+					<div class="playlist-box">
 						<h3 class="text-center">Playlist</h3>
 						<hr class="hr-theme hr-bottomless">
 						<div id="playlist">
 							<h4 class="text-center light"><i>Playlist is currently empty</i></h4>
 							<h4 class="text-center light"><i>Upload some MP3 files to add to playlist</i></h4>
 						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="playlist-box">
+						<h3 class="text-center">Sample songs</h3>
+						<hr class="hr-theme hr-bottomless">
+						<div id="samplePlaylist"></div>
 					</div>
 				</div>
 			</div>
