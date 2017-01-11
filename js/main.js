@@ -11,7 +11,7 @@ $(document).ready(function(){
 	tabSelect(1);
 	uploadFilePageBocHeight = window.innerHeight-120;
 	$('#fileInput').height(uploadFilePageBocHeight);
-	$('#playlistBox').height(uploadFilePageBocHeight);	
+	$('#playlistBox').height(uploadFilePageBocHeight);
 });
 
 
