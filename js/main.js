@@ -1,7 +1,7 @@
 /* Variables */
-var playlistFiles = [];
+var userPlaylistFiles = [];
 var dragDropArea = document.querySelector('#fileInput');
-var playlistElem = document.querySelector('#playlist');
+var userPlaylistElem = document.querySelector('#userPlaylist');
 var samplePlaylistElem = document.querySelector('#samplePlaylist');
 
 
@@ -39,7 +39,11 @@ function tabSelect(tabno)
 
 // Sample files
 sampleFiles = [
-
+	"All Of Me.mp3",
+	"See You Again - Fast and Furious 7.mp3",
+	"Light of the Seven - Game of Thrones.mp3",
+	"Hymn For The Weekend.mp3",
+	"Following the Footsteps.mp3"
 ]
 sampleFilePaths = [];
 for(var i=0;i<sampleFiles.length;i++)
@@ -59,8 +63,8 @@ function addPlaylistItem(filename,index,sample=false)
 	}
 	else
 	{
-		elem.id = "playlistItem"+index.toString();
-		playlistElem.appendChild(elem);		
+		elem.id = "userPlaylistItem"+index.toString();
+		userPlaylistElem.appendChild(elem);
 	}
 	return elem;
 }
