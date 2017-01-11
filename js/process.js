@@ -31,6 +31,7 @@ var max_key_freq = keys[keys_len-max_note_no]["frequency"];
 var min_key_freq = keys[keys_len-min_note_no]["frequency"];
 var freq_map = {};
 
+/* Calculation related variables */
 var history = new Array(history_size);
 for (var i=0;i<history_size;i++)
 {
@@ -179,35 +180,37 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 
 	var audioVisualizerObj = this;
 
-	// stop current song
+	// Stop current song
 	if(visualizer.audioContext!=undefined && visualizer.audioContext.state!="closed")
 		visualizer.audioContext.close();
-	// Make audio context
+
+	// Audio context
 	this.audioContext = new AudioContext();
 	this.audioContext.sampleRate = sampleRate;
-	// create the javascript node
+	// Script processor node
 	this.javascriptNode = this.audioContext.createScriptProcessor(bufferSize,numberOfInputChannels,numberOfOutputChannels);
-	this.javascriptNode.connect(this.audioContext.destination);
-	// create the analyser node
+	// Analyser node
 	this.analyser = this.audioContext.createAnalyser();
 	this.analyser.frequencyBinCount = frequencyBinCount;
 	this.analyser.smoothingTimeConstant = smoothingTimeConstant;
 	this.analyser.fftSize = fftSize;
 	this.analyser.minDecibels = minDecibels;
 	this.analyser.maxDecibels = maxDecibels;
-	// analyser to speakers
-	this.analyser.connect(this.javascriptNode);
-
-	// create the source buffer and gain node
+	// Source buffer and gain node
 	this.sourceBuffer = this.audioContext.createBufferSource();
 	this.sourceBuffer.playbackRate.value = playbackRate;
 	this.gainNode = this.audioContext.createGain();
 	this.sourceBufferOriginal = this.audioContext.createBufferSource();
 	this.sourceBufferOriginal.playbackRate.value = playbackRate;
 	this.gainNodeOriginal = this.audioContext.createGain();
-	// connect source -> gainNode -> song/analyser
+
+	// Connections:
+	//	To play piano : source -> gain node -> analyser -> script processor -> destination
+	//	To play song  : source -> gain node -> destination
 	this.sourceBuffer.connect(this.gainNode);
 	this.gainNode.connect(this.analyser);
+	this.analyser.connect(this.javascriptNode);
+	this.javascriptNode.connect(this.audioContext.destination);
 	this.sourceBufferOriginal.connect(this.gainNodeOriginal);
 	this.gainNodeOriginal.connect(this.audioContext.destination);
 
@@ -242,7 +245,7 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer) {
 
 	this.javascriptNode.onaudioprocess = function () {
 
-		// get the average for the first channel
+		// Get amplitude vs frequency data at current time
 		var array = new Uint8Array(visualizer.analyser.frequencyBinCount);
 		visualizer.analyser.getByteFrequencyData(array);
 
