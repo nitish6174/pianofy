@@ -54,23 +54,28 @@ var out_elem = document.querySelector('#output div.row');
 
 $(document).ready(function () {
 
-	initialiseFrequencyBinDisplay();
-
-	// Setup visualiser
-	visualizer = new AudioVisualizer();
-	visualizer.handleSampleSongs();
-	visualizer.handleSongs();
-
-	// Control buttons
-	$("#repeatSongButton").click(function(){ visualizer.playSong() });
-	$("#stopSongButton").click(function(){ visualizer.stopSong() });
-
 	// MIDI for sound
 	MIDI.loadPlugin({
 		soundfontUrl: "./soundfont/",
 		instrument: "acoustic_grand_piano",
-		onsuccess: function() { playHardCoded(); }
+		onsuccess: function() {
+
+			$("#loadingMsg").hide();
+			initialiseFrequencyBinDisplay();
+
+			// Setup visualiser
+			visualizer = new AudioVisualizer();
+			visualizer.handleSampleSongs();
+			visualizer.handleSongs();
+
+			// Control buttons
+			$("#repeatSongButton").click(function(){ visualizer.playSong() });
+			$("#stopSongButton").click(function(){ visualizer.stopSong() });
+
+		}
 	});
+
+
 	
 });
 
