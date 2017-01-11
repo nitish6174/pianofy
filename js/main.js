@@ -39,11 +39,21 @@ function tabSelect(tabno)
 
 // Sample files
 sampleFiles = [
-	"All Of Me.mp3",
 	"See You Again - Fast and Furious 7.mp3",
-	"Light of the Seven - Game of Thrones.mp3",
+	"Requiem for a Dream (theme music).mp3",
+	"Primavera.mp3",
 	"Hymn For The Weekend.mp3",
-	"Following the Footsteps.mp3"
+	"All Of Me.mp3",
+	"Stairway to Heaven.mp3",
+	"Tip My Hat and Farewell.mp3",
+	"Light of the Seven - Game of Thrones.mp3",
+	"Exhausted.mp3",
+	"Let Her Go.mp3",
+	"Following the Footsteps.mp3",
+	"Leaves in the Wind.mp3",
+	"I Giorni.mp3",
+	"Facing the Mirror.mp3",
+	"Felicity.mp3",
 ]
 sampleFilePaths = [];
 sampleAudios = [];
