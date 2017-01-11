@@ -71,8 +71,6 @@ body {
 	min-height: 500px;
 	padding: 5%;
 	padding-top: 1%;
-	background-color: #fff;
-	box-shadow: 0px 0px 5px 0px #ccc;
 }
 
 
@@ -117,8 +115,6 @@ body {
 
 #playControlBox {
 	padding: 10px;
-	background-color: #fff;
-	box-shadow: 0px 0px 5px 0px #999;
 	font-size: 20px;
 }
 
@@ -128,6 +124,11 @@ body {
 
 
 /* Theme styling */
+
+.sheet {
+	background-color: #fff;
+	box-shadow: 0px 0px 5px 0px #ccc;
+}
 
 .btn.btn-theme {
 	background-color: #1ABC9C;
