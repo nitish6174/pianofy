@@ -1,144 +1,161 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
-	<title>Pianofy</title>
-	<link rel="stylesheet" type="text/css" href="css/ext/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/ext/piano.css">
-	<link rel="stylesheet" type="text/css" href="css/thin_scroll.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+    <title>Pianofy</title>
+    <meta charset="UTF-8">
+    <link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
+    <!-- Meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Nitish Garg">
+    <meta name="description" content="Extract piano notes from MP3 files">
+    <meta name="keywords" content="piano,note extractor">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/ext/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ext/piano.css">
+    <link rel="stylesheet" type="text/css" href="css/thin_scroll.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
+
 <body>
 
-	<div class="container-fluid">
-	<div class="row" id="tabBar">
-		<div class="col-xs-4 tab-head page-toggle" id="tabHead1" data-tabno="1"><div><h3>About</h3></div></div>
-		<div class="col-xs-4 tab-head page-toggle" id="tabHead2" data-tabno="2"><div><h3>Playlist</h3></div></div>
-		<div class="col-xs-4 tab-head page-toggle" id="tabHead3" data-tabno="3"><div><h3>Now playing</h3></div></div>
-	</div>
-	</div>
+    <div class="container-fluid">
+    <div class="row" id="tabBar">
+        <div class="col-xs-4 tab-head page-toggle" id="tabHead1" data-tabno="1"><div><h3>About</h3></div></div>
+        <div class="col-xs-4 tab-head page-toggle" id="tabHead2" data-tabno="2"><div><h3>Playlist</h3></div></div>
+        <div class="col-xs-4 tab-head page-toggle" id="tabHead3" data-tabno="3"><div><h3>Now playing</h3></div></div>
+    </div>
+    </div>
 
-	<div class="container-fluid" id="page1">
+    <div class="container-fluid" id="page1">
 
-		<div class="tab-page" id="page1">
-			<div class="row">
-				<div class="col-md-10 col-md-offset-1">
-					<div class="sheet" id="aboutBox">
-						<h1 class="text-center">Pianofy</h1>
-						<hr class="hr-theme hr-thick">
-						<h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
-						<br>
-						<ul>
-							<li><h4>Go to the <i>'Playlist'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
-							<li><h4>Click on any song from the playlist to start processing it</h4></li>
-							<li><h4>Generated notes will be shown on a piano as the song is played</h4></li>
-							<li><h4>Use the controls to restart, stop the song or choose another song from the playlist</h4></li>
-							<li><h4>You can mix the original song and piano notes using slider to see which part of song is being played</h4></li>
-						</ul>
-						<br>
-						<div class="text-center">
-							<button class="btn btn-theme btn-lg" onclick="tabSelect(2);"><strong>Start</strong></button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="tab-page" id="page1">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="sheet" id="aboutBox">
+                        <h1 class="text-center">Pianofy</h1>
+                        <hr class="hr-theme hr-thick">
+                        <h3 class="text-center">Convert MP3 files into piano notes and learn along!</h3>
+                        <br>
+                        <ul>
+                            <li><h4>Go to the <i>'Playlist'</i> tab and upload the MP3 files of which you want to generate piano notes</h4></li>
+                            <li><h4>Click on any song from the playlist to start processing it</h4></li>
+                            <li><h4>Generated notes will be shown on a piano as the song is played</h4></li>
+                            <li><h4>Use the controls to restart, stop the song or choose another song from the playlist</h4></li>
+                            <li><h4>You can mix the original song and piano notes using slider to see which part of song is being played</h4></li>
+                        </ul>
+                        <br>
+                        <div class="text-center">
+                            <button class="btn btn-theme btn-lg" onclick="tabSelect(2);"><strong>Start</strong></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<div class="tab-page" id="page2">
-			<div class="row">
-				<div class="col-sm-4">
-					<div id="fileInputWrapper">
-					    <div id="fileInput"><h3>Drag and drop MP3 files</h3></div>
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="playlist-box">
-						<h3 class="text-center">Playlist</h3>
-						<hr class="hr-theme hr-bottomless">
-						<div class="playlist" id="userPlaylist">
-							<h4 class="text-center light"><i>Playlist is currently empty</i></h4>
-							<h4 class="text-center light"><i>Upload some MP3 files to add to playlist</i></h4>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="playlist-box">
-						<h3 class="text-center">Sample songs</h3>
-						<hr class="hr-theme hr-bottomless">
-						<div class="playlist" id="samplePlaylist">
-							<h4 class="text-center light"><i>Loading ...</i></h4>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="tab-page" id="page2">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div id="fileInputWrapper">
+                        <div id="fileInput"><h3>Drag and drop MP3 files</h3></div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="playlist-box">
+                        <h3 class="text-center">Playlist</h3>
+                        <hr class="hr-theme hr-bottomless">
+                        <div class="playlist" id="userPlaylist">
+                            <h4 class="text-center light"><i>Playlist is currently empty</i></h4>
+                            <h4 class="text-center light"><i>Upload some MP3 files to add to playlist</i></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="playlist-box">
+                        <h3 class="text-center">Sample songs</h3>
+                        <hr class="hr-theme hr-bottomless">
+                        <div class="playlist" id="samplePlaylist">
+                            <h4 class="text-center light"><i>Loading ...</i></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<div class="tab-page" id="page3">
-			<div class="row">
-				<div class="col-xs-12">
-					<div class="sheet" id="playControlBox">
-						<div class="row">
-							<div class="col-md-11 col-sm-10" id="songTitle">
-								<strong>Song : </strong><span id="currentSongName">N/A</span>
-							</div>
-							<div class="col-md-1 col-sm-2">
-								<i class="clickable glyphicon glyphicon-repeat" id="repeatSongButton"></i>
-								<i class="clickable glyphicon glyphicon-stop" id="stopSongButton"></i>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-3 text-right">Piano</div>
-							<div class="col-xs-6" id="sliderLabelLeft">
-								<input type="range" min="0" max="100" value="0" id="playModeSlider">
-							</div>
-							<div class="col-xs-3">Original</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<h2 class="text-center" id="loadingMsg">Loading libraries ...</h2>
-			<br>
-			<div class="row">
-				<div class="col-xs-12">
-					<div id="keyboard"></div>
-				</div>
-			</div>
-			<br>
-			<div id="output">
-				<div class="row"></div>
-			</div>
-		</div>
+        <div class="tab-page" id="page3">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="sheet" id="playControlBox">
+                        <div class="row">
+                            <div class="col-md-11 col-sm-10" id="songTitle">
+                                <strong>Song : </strong><span id="currentSongName">N/A</span>
+                            </div>
+                            <div class="col-md-1 col-sm-2">
+                                <i class="clickable glyphicon glyphicon-repeat" id="repeatSongButton"></i>
+                                <i class="clickable glyphicon glyphicon-stop" id="stopSongButton"></i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-3 text-right">Piano</div>
+                            <div class="col-xs-6" id="sliderLabelLeft">
+                                <input type="range" min="0" max="100" value="0" id="playModeSlider">
+                            </div>
+                            <div class="col-xs-3">Original</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="text-center" id="loadingMsg">Loading libraries ...</h2>
+            <br>
+            <div class="row" id="keyboardContainer">
+                <div class="col-xs-12">
+                    <div id="keyboard"></div>
+                </div>
+            </div>
+            <br>
+            <div row="row" id="pianoBarVisualiser">
+                <div class="col-xs-12"></div>
+            </div>
+            <br>
+            <div row="row" id="songBarVisualiser">
+                <div class="col-xs-12"></div>
+            </div>
+            <br>
+            <div id="output">
+                <div class="row"></div>
+            </div>
+        </div>
 
-	</div>
+    </div>
 
 
 
+    <script type="text/javascript" src="js/ext/jquery.min.js"></script>
+    <script type="text/javascript" src="js/ext/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 
+    <script type="text/javascript" src="data/keys.json"></script>
+    <script type="text/javascript" src="js/audiosynth.js"></script>
 
-	<script type="text/javascript" src="js/ext/jquery.min.js"></script>
-	<script type="text/javascript" src="js/ext/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/ext/d3.min.js"></script>
+    <!-- <script type="text/javascript" src="js/MIDI.js"></script> -->
+    <script type="text/javascript" src="js/inc/shim/Base64.js"></script>
+    <script type="text/javascript" src="js/inc/shim/Base64binary.js"></script>
+    <script type="text/javascript" src="js/inc/shim/WebAudioAPI.js"></script>
+    <script type="text/javascript" src="js/midi/audioDetect.js"></script>
+    <script type="text/javascript" src="js/midi/gm.js"></script>
+    <script type="text/javascript" src="js/midi/loader.js"></script>
+    <script type="text/javascript" src="js/midi/plugin.audiotag.js"></script>
+    <script type="text/javascript" src="js/midi/plugin.webaudio.js"></script>
+    <script type="text/javascript" src="js/midi/plugin.webmidi.js"></script>
+    <script type="text/javascript" src="js/util/dom_request_xhr.js"></script>
+    <script type="text/javascript" src="js/util/dom_request_script.js"></script>
 
-	<script type="text/javascript" src="data/keys.json"></script>
-	<script type="text/javascript" src="js/audiosynth.js"></script>
+    <script type="text/javascript" src="js/keyboard/piano.js"></script>
+    <script type="text/javascript" src="js/keyboard/makekeyboard.js"></script>
 
-	<script type="text/javascript" src="js/ext/d3.min.js"></script>
-	<!-- <script type="text/javascript" src="js/MIDI.js"></script> -->
-	<script type="text/javascript" src="js/inc/shim/Base64.js"></script>
-	<script type="text/javascript" src="js/inc/shim/Base64binary.js"></script>
-	<script type="text/javascript" src="js/inc/shim/WebAudioAPI.js"></script>
-	<script type="text/javascript" src="js/midi/audioDetect.js"></script>
-	<script type="text/javascript" src="js/midi/gm.js"></script>
-	<script type="text/javascript" src="js/midi/loader.js"></script>
-	<script type="text/javascript" src="js/midi/plugin.audiotag.js"></script>
-	<script type="text/javascript" src="js/midi/plugin.webaudio.js"></script>
-	<script type="text/javascript" src="js/midi/plugin.webmidi.js"></script>
-	<script type="text/javascript" src="js/util/dom_request_xhr.js"></script>
-	<script type="text/javascript" src="js/util/dom_request_script.js"></script>
-
-	<script type="text/javascript" src="js/keyboard/piano.js"></script>
-	<script type="text/javascript" src="js/keyboard/makekeyboard.js"></script>
-
-	<script type="text/javascript" src="js/process.js"></script>
+    <script type="text/javascript" src="js/process.js"></script>
 
 </body>
+
 </html>

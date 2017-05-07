@@ -1,18 +1,19 @@
 /*
-	Color scheme
-		TURQUOISE
-			#1ABC9C
-			hsl(168,75%,41%)
-		GREEN SEA
-			#16A085
-			hsl(168,75%,35%)
+    Color scheme
+        TURQUOISE
+            #1ABC9C
+            hsl(168,75%,41%)
+        GREEN SEA
+            #16A085
+            hsl(168,75%,35%)
 */
+
 
 
 /* Content display control */
 
 .tab-page {
-	display: none;
+    display: none;
 }
 
 
@@ -20,7 +21,7 @@
 /* Body styling */
 
 body {
-	background-color: #eee;
+    background-color: #eee;
 }
 
 
@@ -28,30 +29,30 @@ body {
 /* Tab styling */
 
 #tabBar {
-	box-shadow: 0px 5px 5px 0px #aaa;
+    box-shadow: 0px 5px 5px 0px #aaa;
 }
 .tab-head {
-	height: 60px;
-	background-color: #fff;
-	color: #666;
-	text-align: center;
-	vertical-align: middle;
-	cursor: pointer;
+    height: 60px;
+    background-color: #fff;
+    color: #666;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
 }
 .tab-head:hover {
-	box-shadow: 0px -10px 0px -5px hsla(168,75%,41%,0.2) inset;
+    box-shadow: 0px -10px 0px -5px hsla(168,75%,41%,0.2) inset;
 }
 .tab-head.active {
-	box-shadow: 0px -10px 0px -5px hsl(168,75%,41%) inset;
-	color: #333;
-	font-weight: 700;
+    box-shadow: 0px -10px 0px -5px hsl(168,75%,41%) inset;
+    color: #333;
+    font-weight: 700;
 }
 
 .tab-head>div {
-	margin-top: 15px;
+    margin-top: 15px;
 }
 .tab-head>div * {
-	margin: 0;
+    margin: 0;
 }
 
 
@@ -59,7 +60,7 @@ body {
 /* Tabbed Pages */
 
 .tab-page {
-	margin-top: 30px;
+    margin-top: 30px;
 }
 
 
@@ -68,107 +69,112 @@ body {
 
 #aboutBox
 {
-	min-height: 500px;
-	padding: 5%;
-	padding-top: 1%;
+    min-height: 500px;
+    padding: 5%;
+    padding-top: 1%;
 }
-
 
 
 
 /* File upload page */
 
 #fileInputWrapper {
-	display: table;
-	width: 100%;
-	background-color: #fff;
-	border: 2px dashed #ccc;
+    display: table;
+    width: 100%;
+    background-color: #fff;
+    border: 2px dashed #ccc;
 }
 #fileInput {
-	width: 100%;
-	height: 100%;
-	display: table-cell;
-	text-align: center;
-	vertical-align: middle;
+    width: 100%;
+    height: 100%;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .playlist-box {
-	background-color: #fff;
-	border: 1px solid #ccc;
-	overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    overflow-y: auto;
 }
 .playlist-item {
-	padding: 5px;
-	padding-left: 20px;
-	border-bottom: 1px solid #ccc;
-	cursor: pointer;
+    padding: 5px;
+    padding-left: 20px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
 }
 .playlist-item:hover {
-	background-color: #f6f6f6;
+    background-color: #f6f6f6;
 }
 .playlist-item.playing {
-	background-color: hsla(168,75%,41%,0.5);
+    background-color: hsla(168,75%,41%,0.5);
 }
+
 
 
 /* Now playing page */
 
 #playControlBox {
-	padding: 10px;
-	font-size: 20px;
+    padding: 10px;
+    font-size: 20px;
+}
+
+#keyboardContainer {
+    display: none;
 }
 
 #output {
-	display: none;
+    display: none;
 }
+
 
 
 /* Theme styling */
 
 .sheet {
-	background-color: #fff;
-	box-shadow: 0px 0px 5px 0px #ccc;
+    background-color: #fff;
+    box-shadow: 0px 0px 5px 0px #ccc;
 }
 
 .btn.btn-theme {
-	background-color: #1ABC9C;
-	color: #fff;
-	border-radius: 2px;
+    background-color: #1ABC9C;
+    color: #fff;
+    border-radius: 2px;
 }
 .btn.btn-theme:hover {
-	background-color: #16A085;
+    background-color: #16A085;
 }
 
 .clickable {
-	cursor: pointer;
-	color: #1ABC9C;
-	transition: all 0.2s;
+    cursor: pointer;
+    color: #1ABC9C;
+    transition: all 0.2s;
 }
 .clickable:hover {
-	text-shadow: 0px 0px 5px #1ABC9C;
+    text-shadow: 0px 0px 5px #1ABC9C;
 }
 
 .hr-theme {
-	border: 1px solid #1ABC9C;
+    border: 1px solid #1ABC9C;
 }
 .hr-thick {
-	border-width: 2px;
+    border-width: 2px;
 }
 .hr-bottomless {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .light {
-	color: #999;
+    color: #999;
 }
 
 .float-left {
-	float: left;
+    float: left;
 }
 .float-right {
-	float: right;
+    float: right;
 }
 
 .text-right {
-	text-align: right;
+    text-align: right;
 }
