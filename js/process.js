@@ -38,12 +38,17 @@ var frequency_note_map = {};
 
 /* Calculation related variables */
 
-// No of frequency-amplitude snapshots to be maintained
-var history_size = 5;
+// No of frequency-amplitude snapshots to be treated as future snapshots when detecting current note
+var future_snapshots = 3;
+// No of frequency-amplitude snapshots to be treated as past snapshots when detecting current note
+var past_snapshots = 5;
+// No of total frequency-amplitude snapshots to be maintained
+var history_size = future_snapshots + past_snapshots;
 // Frequency-Amplitude snapshot array
 // The array will be seeded after loading MIDI soundfont
 freq_amp_arr = new Array(history_size);
-// History snapshots are stored in a circular queue fashion, history_pos stores latest index in array
+// Frequency-Amplitude snapshots are stored in a circular queue fashion
+// history_pos stores latest snapshot index
 history_pos = 0;
 
 
@@ -334,9 +339,6 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
         var array = new Uint8Array(visualizer.analyser.frequencyBinCount);
         visualizer.analyser.getByteFrequencyData(array);
 
-        // Variables to calculate average amplitude of each bin at current snapshot
-        var snapshot_amp_sum = 0;
-        var snapshot_bin_count = 0;
         // Loop through each bin to record snapshot
         for(var i=0; i<frequencyBinCount; i++)
         {
@@ -344,15 +346,11 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
             var f = bin_frequency_map[i];
             if(frequency_note_map[f]!="")
             {
-                var amplitude = array[i];
-                snapshot_amp_sum += amplitude;
-                snapshot_bin_count++;
                 // Add current bin's amplitude value to freq-amp snapshot
+                var amplitude = array[i];
                 freq_amp_arr[history_pos][i] = amplitude;
             }
         }
-        // Calculate average amplitude at current snapshot
-        var snapshot_amp_avg = snapshot_amp_sum/snapshot_bin_count;
         // Loop through each bin and check if corresponding note should be played
         for(var i=0; i<frequencyBinCount; i++)
         {
@@ -360,14 +358,20 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
             if(frequency_note_map[f]!="")
             {
                 note = frequency_note_map[f];
-                // Check if note is to be displayed
-                if(checkNote(snapshot_amp_avg, i, 4)==1)
-                    $("[data-ipn='"+note+"']").addClass('active');
-                else
-                    $("[data-ipn='"+note+"']").removeClass('active');
+                var display_key = $("[data-ipn='"+note+"']");
                 // Check if note sound is to be played
-                if(checkNote(snapshot_amp_avg, i, 4)==1)
+                if(checkNote(i, 4)==1)
+                {
                     playNote(note, freq_amp_arr[history_pos][i]);
+                    $(display_key).addClass('active');
+                }
+                else
+                    $(display_key).removeClass('active');
+                // else if($(display_key).hasClass('active'))
+                // {
+                //     if(removeNoteDisplay(i))
+                //         $(display_key).removeClass('active');
+                // }
             }
         }
         // Update history index
@@ -380,10 +384,11 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
 
 /* Process history to determine if a note is to be played */
 
-function checkNote(snapshot_amp_avg, i, method)
+function checkNote(i, method)
 {
     var l = freq_amp_arr[history_pos].length;
     // Find various amplitude values
+    var snapshot_amp_avg = snapshotAverageAmplitude(freq_amp_arr[history_pos]);
     var this_amp = freq_amp_arr[history_pos][i];
     var prev_snapshot_amp = freq_amp_arr[(history_pos+history_size-1)%history_size][i];
     var next_snapshot_amp = freq_amp_arr[(history_pos+1)%history_size][i];
@@ -407,6 +412,34 @@ function checkNote(snapshot_amp_avg, i, method)
         default: return 0;
     }
     return 0;
+}
+
+
+
+/* Determine if a note display is to be stopped */
+
+function removeNoteDisplay(i)
+{
+    // Find amplitude values
+    var this_amp = freq_amp_arr[history_pos][i];
+    var initial_snapshot_amp = freq_amp_arr[(history_pos+1)%history_size][i];
+    // Check if amplitude has fallen enough
+    if( (this_amp<initial_snapshot_amp*0.9) || (this_amp<initial_snapshot_amp-5) )
+        return 1;
+    return 0;
+}
+
+
+
+/* Utility function to find average amplitude value for a snapshot */
+
+function snapshotAverageAmplitude(snapshot_arr)
+{
+    var amp_sum = 0;
+    var bin_count = snapshot_arr.length;
+    for(var i=0; i<bin_count; i++)
+        amp_sum += snapshot_arr[i];
+    return amp_sum / bin_count;
 }
 
 
@@ -514,17 +547,3 @@ var keyNoteMap = {
     'G':11, 
     'G#':12
 };
-
-
-
-/* MIDI sound test function */
-
-function testMIDI()
-{
-    playNote('C4');
-    playNote('E4');
-    playNote('G4');
-    playNote('A4');
-    playNote('C5');
-    playNote('E5');
-}
