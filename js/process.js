@@ -361,12 +361,12 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
             {
                 note = frequency_note_map[f];
                 // Check if note is to be displayed
-                if(checkDisplayNote(snapshot_amp_avg, i)==1)
+                if(checkNote(snapshot_amp_avg, i, 4)==1)
                     $("[data-ipn='"+note+"']").addClass('active');
                 else
                     $("[data-ipn='"+note+"']").removeClass('active');
                 // Check if note sound is to be played
-                if(checkPlayNote(snapshot_amp_avg, i)==1)
+                if(checkNote(snapshot_amp_avg, i, 4)==1)
                     playNote(note, freq_amp_arr[history_pos][i]);
             }
         }
@@ -378,32 +378,33 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
 
 
 
-/* Process history to determine if a note is to be displayed */
+/* Process history to determine if a note is to be played */
 
-function checkDisplayNote(snapshot_amp_avg, i)
+function checkNote(snapshot_amp_avg, i, method)
 {
-    var amp = freq_amp_arr[history_pos][i];
     var l = freq_amp_arr[history_pos].length;
-    if( amp>1.3*snapshot_amp_avg+30 )
+    // Find various amplitude values
+    var this_amp = freq_amp_arr[history_pos][i];
+    var prev_snapshot_amp = freq_amp_arr[(history_pos+history_size-1)%history_size][i];
+    var next_snapshot_amp = freq_amp_arr[(history_pos+1)%history_size][i];
+    var right_bin_amp = 0;
+    var right_bin_amp = 0;
+    if(i>0) { left_bin_amp = freq_amp_arr[history_pos][i-1]; }
+    if(i<l-1) { right_bin_amp = freq_amp_arr[history_pos][i+1]; }
+    // Boolean results for various checks
+    var above_avg_amp = (this_amp > (1.3*snapshot_amp_avg+30)) ? true : false;
+    var above_left_bin_amp = (this_amp > left_bin_amp) ? true : false;
+    var above_right_bin_amp = (this_amp > right_bin_amp) ? true : false;
+    var above_prev_snapshot_amp = (this_amp-prev_snapshot_amp >= -30) ? true : false;
+    var above_next_snapshot_amp = (this_amp-next_snapshot_amp > 8) ? true : false;
+    // Combine various combinations of above boolean checks in different methods
+    switch(method)
     {
-        if( (i==l||freq_amp_arr[history_pos][i]>freq_amp_arr[history_pos][i+1]) && (amp-freq_amp_arr[(history_pos+history_size-1)%history_size][i]>=-30) )
-            return 1;
-    }
-    return 0;
-}
-
-
-
-/* Process history to determine if a note sound is to be played */
-
-function checkPlayNote(snapshot_amp_avg, i)
-{
-    var amp = freq_amp_arr[history_pos][i];
-    var l = freq_amp_arr[history_pos].length;
-    if( amp>1.3*snapshot_amp_avg+30 )
-    {
-        if( (i==l||freq_amp_arr[history_pos][i]>freq_amp_arr[history_pos][i+1]) && (amp-freq_amp_arr[(history_pos+1)%history_size][i]>8) )
-            return 1;
+        case 1: return (above_avg_amp && above_right_bin_amp);
+        case 2: return (above_avg_amp && above_right_bin_amp && above_next_snapshot_amp);
+        case 3: return (above_avg_amp && above_right_bin_amp && above_prev_snapshot_amp);
+        case 4: return (above_prev_snapshot_amp && above_next_snapshot_amp && above_left_bin_amp && above_right_bin_amp);
+        default: return 0;
     }
     return 0;
 }
@@ -414,10 +415,10 @@ function checkPlayNote(snapshot_amp_avg, i)
 
 function initializeFrequencyArray()
 {
-    for (var i=0; i<history_size; i++)
+    for(var i=0; i<history_size; i++)
     {
         freq_amp_arr[i] = new Array(frequencyBinCount);
-        for (var j=0; j<frequencyBinCount; j++)
+        for(var j=0; j<frequencyBinCount; j++)
             freq_amp_arr[i][j] = 0;
     }
 }
