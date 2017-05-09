@@ -9,8 +9,7 @@ var playbackRate = 1;
 var frequencyBinCount = 256;
 var fftSize = 4096;
 var sampleRate = 44100;
-// var binWidth = 10;
-// var sampleRate = binWidth*fftSize;
+// var sampleRate = binWidth * fftSize;
 var minDecibels = -100;
 var maxDecibels = -10;
 var smoothingTimeConstant = 0.9;
@@ -27,11 +26,14 @@ var currentUserPlaylistIndex;
 var keys = JSON.parse(keys);
 var min_note_no = 13;
 var max_note_no = 76;
+var keys_count = keys.length;
+var note_count = max_note_no - min_note_no + 1;
 
-var keys_len = keys.length;
-var max_key_freq = keys[keys_len-max_note_no]["frequency"];
-var min_key_freq = keys[keys_len-min_note_no]["frequency"];
+var max_key_freq = keys[keys_count-max_note_no]["frequency"];
+var min_key_freq = keys[keys_count-min_note_no]["frequency"];
 
+var key_no_to_note_letter_map = new Array(keys_count+1);
+key_no_to_note_letter_map.fill("");
 var bin_frequency_map = [];
 var frequency_note_map = {};
 
@@ -344,7 +346,7 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
         {
             // Get frequency value corresponding to i'th bin
             var f = bin_frequency_map[i];
-            if(frequency_note_map[f]!="")
+            if(frequency_note_map[f]!=0)
             {
                 // Add current bin's amplitude value to freq-amp snapshot
                 var amplitude = array[i];
@@ -355,14 +357,15 @@ AudioVisualizer.prototype.startAudioProcessing = function (buffer, sample=false)
         for(var i=0; i<frequencyBinCount; i++)
         {
             var f = bin_frequency_map[i];
-            if(frequency_note_map[f]!="")
+            if(frequency_note_map[f]!=0)
             {
-                note = frequency_note_map[f];
+                key_no = frequency_note_map[f];
+                note = key_no_to_note_letter_map[key_no];
                 var display_key = $("[data-ipn='"+note+"']");
                 // Check if note sound is to be played
                 if(checkNote(i, 4)==1)
                 {
-                    playNote(note, freq_amp_arr[history_pos][i]);
+                    playNote(key_no, freq_amp_arr[history_pos][i]);
                     $(display_key).addClass('active');
                 }
                 else
@@ -451,23 +454,30 @@ function initializeFrequencyArray()
     for(var i=0; i<history_size; i++)
     {
         freq_amp_arr[i] = new Array(frequencyBinCount);
-        for(var j=0; j<frequencyBinCount; j++)
-            freq_amp_arr[i][j] = 0;
+        freq_amp_arr[i].fill(0);
     }
 }
 
 
 
-/* Initialize bin->frequency and frequency->note mapping */
+/* Initialize varioud required mappings */
 
 function initializeMappings()
 {
+    // Map bin->frequency and frequency->note
     for(var i=0; i<frequencyBinCount; i++)
     {
         var freq = binIndexToFrequency(i);
         bin_frequency_map.push(freq);
         frequency_note_map[freq] = frequencyToNote(freq);
     }
+    // Map key no -> Note letter
+    keys.forEach(function(x){
+        key_no_to_note_letter_map[x["key_no"]] = x["note"];
+    });
+    // console.log(bin_frequency_map);
+    // console.log(frequency_note_map);
+    // console.log(key_no_to_note_letter_map);
 }
 
 
@@ -489,9 +499,9 @@ function frequencyToNote(frequency)
 {
     if(frequency>=min_key_freq && frequency<=max_key_freq)
     {
-        var pos = keys_len-max_note_no;
+        var pos = keys_count-max_note_no;
         var mindiff = Math.abs(frequency-keys[pos]['frequency']);
-        for(var i=pos; i<=keys_len-min_note_no; i++)
+        for(var i=pos; i<=keys_count-min_note_no; i++)
         {
             var diff = Math.abs(frequency-keys[i]['frequency']);
             if(diff<mindiff)
@@ -500,9 +510,9 @@ function frequencyToNote(frequency)
                 mindiff = diff;
             }
         }
-        return keys[pos]["note"];
+        return keys[pos]["key_no"];
     }
-    return "";
+    return 0;
 }
 
 
